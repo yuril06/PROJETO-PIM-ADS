@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}Cantina Escolar{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <!-- ===== BARRA DE NAVEGAÇÃO ===== -->
+    <nav class="navbar">
+        <div class="nav-brand">
+            🏫 Cantina Escolar
+        </div>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('painel') }}">📦 Painel</a></li>
+            <li><a href="{{ url_for('cadastro') }}">➕ Cadastrar</a></li>
+            <li><a href="{{ url_for('venda') }}">🛒 Registrar Venda</a></li>
+            <li><a href="{{ url_for('relatorio') }}">📊 Relatório</a></li>
+            <li><a href="{{ url_for('historico') }}">📅 Histórico</a></li>
+        </ul>
+    </nav>
+
+    <!-- ===== CONTEÚDO PRINCIPAL ===== -->
+    <main class="container">
+
+        <!-- Mensagens flash: feedback de ações para o usuário -->
+        {% with mensagens = get_flashed_messages(with_categories=true) %}
+            {% if mensagens %}
+                {% for categoria, mensagem in mensagens %}
+                    <div class="alerta alerta-{{ categoria }}">
+                        {{ mensagem }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Bloco de conteúdo específico de cada página -->
+        {% block conteudo %}{% endblock %}
+
+    </main>
+
+    <!-- ===== RODAPÉ ===== -->
+    <footer class="rodape">
+        <p>Sistema de Controle de Estoque — Cantina Escolar &nbsp;|&nbsp; Projeto PIM — ADS 1º Semestre</p>
+    </footer>
+
+</body>
+</html>

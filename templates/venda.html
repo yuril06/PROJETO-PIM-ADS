@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block titulo %}Registrar Venda — Cantina Escolar{% endblock %}
+
+{% block conteudo %}
+
+<!-- ===== CABEÇALHO ===== -->
+<div class="cabecalho-pagina">
+    <h1>🛒 Registrar Venda</h1>
+    <a href="{{ url_for('painel') }}" class="btn-voltar">← Voltar ao Painel</a>
+</div>
+
+<!-- ===== FORMULÁRIO DE VENDA ===== -->
+<div class="formulario-container">
+    <form method="POST" action="{{ url_for('venda') }}">
+
+        <!-- Campo: Seleção do produto -->
+        <div class="campo-formulario">
+            <label for="produto_id">Produto *</label>
+            <select id="produto_id" name="produto_id" required>
+                <option value="">Selecione um produto...</option>
+                {% for produto in produtos %}
+                <option value="{{ produto['id'] }}">
+                    {{ produto['nome'] }} — Estoque: {{ produto['quantidade'] }} un.
+                    {% if produto['estoque_baixo'] %} ⚠️{% endif %}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <!-- Campo: Quantidade vendida -->
+        <div class="campo-formulario">
+            <label for="quantidade">Quantidade Vendida *</label>
+            <input type="number" id="quantidade" name="quantidade"
+                   min="1" placeholder="Ex: 2" required>
+        </div>
+
+        <!-- Botão de envio -->
+        <button type="submit" class="btn-principal">
+            💰 Confirmar Venda
+        </button>
+
+    </form>
+</div>
+
+<!-- ===== TABELA DE ESTOQUE ATUAL (referência para quem registra a venda) ===== -->
+<div class="tabela-container">
+    <h2>📋 Estoque Atual</h2>
+
+    {% if produtos %}
+    <table class="tabela">
+        <thead>
+            <tr>
+                <th>Produto</th>
+                <th>Qtd. em Estoque</th>
+                <th>Preço Unit.</th>
+                <th>Mínimo</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for produto in produtos %}
+            <!-- Linha fica vermelha se o produto estiver com estoque baixo -->
+            <tr {% if produto['estoque_baixo'] %}class="linha-alerta"{% endif %}>
+                <td>{{ produto['nome'] }}</td>
+                <td>{{ produto['quantidade'] }}</td>
+                <td>R$ {{ "%.2f"|format(produto['preco']) }}</td>
+                <td>{{ produto['estoque_minimo'] }}</td>
+                <td>
+                    {% if produto['estoque_baixo'] %}
+                        ⚠️ Estoque Baixo
+                    {% else %}
+                        ✅ Normal
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="sem-dados">Nenhum produto cadastrado.</p>
+    {% endif %}
+</div>
+
+{% endblock %}

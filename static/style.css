@@ -1,0 +1,574 @@
+/* ============================================================
+   style.css - Estilos do Sistema de Estoque - Cantina Escolar
+   Projeto PIM - ADS 1º Semestre
+   ============================================================ */
+
+/* --- Reset básico e variáveis de cores --- */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --azul-escuro:  #2c5f8a;   /* Cor principal (navbar, títulos) */
+    --azul-medio:   #3a7abf;   /* Cor secundária (hover, foco) */
+    --verde:        #28a745;   /* Cor de sucesso */
+    --vermelho:     #dc3545;   /* Cor de alerta / estoque baixo */
+    --amarelo:      #ffc107;   /* Cor de aviso */
+    --cinza-fundo:  #f4f6f9;   /* Fundo da página */
+    --branco:       #ffffff;   /* Fundo dos cards e formulários */
+    --cinza-borda:  #dee2e6;   /* Bordas e divisórias */
+    --texto:        #333333;   /* Cor padrão do texto */
+    --sombra:       0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--cinza-fundo);
+    color: var(--texto);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ============================================================
+   BARRA DE NAVEGAÇÃO
+   ============================================================ */
+.navbar {
+    background-color: var(--azul-escuro);
+    padding: 0 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+}
+
+.nav-brand {
+    color: white;
+    font-size: 1.3rem;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 4px;
+}
+
+.nav-links a {
+    color: rgba(255, 255, 255, 0.88);
+    text-decoration: none;
+    padding: 8px 13px;
+    border-radius: 6px;
+    font-size: 0.88rem;
+    transition: background-color 0.2s;
+}
+
+.nav-links a:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: white;
+}
+
+/* ============================================================
+   CONTAINER PRINCIPAL
+   ============================================================ */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 20px;
+    flex: 1;
+}
+
+/* ============================================================
+   CABEÇALHO DAS PÁGINAS
+   ============================================================ */
+.cabecalho-pagina {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--cinza-borda);
+}
+
+.cabecalho-pagina h1 {
+    font-size: 1.75rem;
+    color: var(--azul-escuro);
+}
+
+/* ============================================================
+   MENSAGENS FLASH (feedback ao usuário)
+   ============================================================ */
+.alerta {
+    padding: 13px 18px;
+    border-radius: 8px;
+    margin-bottom: 18px;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.alerta-sucesso {
+    background-color: #d4edda;
+    color: #155724;
+    border-left: 4px solid var(--verde);
+}
+
+.alerta-erro {
+    background-color: #f8d7da;
+    color: #721c24;
+    border-left: 4px solid var(--vermelho);
+}
+
+.alerta-aviso {
+    background-color: #fff3cd;
+    color: #856404;
+    border-left: 4px solid var(--amarelo);
+}
+
+/* ============================================================
+   BANNER DE ALERTA NO PAINEL (quando há produtos com estoque baixo)
+   ============================================================ */
+.banner-alerta {
+    background-color: #fff3cd;
+    color: #7d5a00;
+    border: 2px solid var(--amarelo);
+    padding: 14px 20px;
+    border-radius: 8px;
+    margin-bottom: 22px;
+    font-size: 1rem;
+    text-align: center;
+}
+
+/* ============================================================
+   GRADE DE CARDS DOS PRODUTOS
+   ============================================================ */
+.grade-produtos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+/* ============================================================
+   CARD DE PRODUTO — ESTADO NORMAL
+   ============================================================ */
+.card-produto {
+    background-color: var(--branco);
+    border: 2px solid var(--cinza-borda);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: var(--sombra);
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card-produto:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.13);
+}
+
+/* ============================================================
+   CARD DE PRODUTO — ESTOQUE BAIXO (fica VERMELHO)
+   O card inteiro muda de cor para chamar atenção visualmente.
+   ============================================================ */
+.card-produto.estoque-baixo {
+    border-color: var(--vermelho);
+    background-color: #fff5f5;
+}
+
+/* Animação de piscar na borda para chamar mais atenção */
+@keyframes piscar {
+    0%, 100% { border-color: var(--vermelho); }
+    50%       { border-color: #ff9999; }
+}
+
+.card-produto.estoque-baixo {
+    animation: piscar 2.5s ease-in-out infinite;
+}
+
+/* Título do card fica vermelho quando em alerta */
+.card-produto.estoque-baixo .card-cabecalho h3 {
+    color: var(--vermelho);
+}
+
+/* --- Cabeçalho do card --- */
+.card-cabecalho {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--cinza-borda);
+    gap: 8px;
+}
+
+.card-cabecalho h3 {
+    font-size: 1rem;
+    color: var(--azul-escuro);
+    flex: 1;
+}
+
+/* Pequena etiqueta vermelha "⚠️ BAIXO" */
+.badge-alerta {
+    background-color: var(--vermelho);
+    color: white;
+    font-size: 0.68rem;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+/* --- Corpo do card --- */
+.card-corpo {
+    flex: 1;
+}
+
+.info-produto {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+    font-size: 0.92rem;
+    border-bottom: 1px dashed #f0f0f0;
+}
+
+.info-produto:last-of-type {
+    border-bottom: none;
+}
+
+.rotulo {
+    color: #666;
+}
+
+.valor {
+    font-weight: 600;
+}
+
+.texto-vermelho {
+    color: var(--vermelho);
+}
+
+/* Caixa de aviso dentro do card com estoque baixo */
+.aviso-estoque {
+    margin-top: 12px;
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 0.83rem;
+    text-align: center;
+    font-weight: 500;
+    line-height: 1.5;
+}
+
+/* --- Rodapé do card --- */
+.card-rodape {
+    margin-top: 14px;
+    padding-top: 10px;
+    border-top: 1px solid var(--cinza-borda);
+    color: #999;
+    font-size: 0.78rem;
+}
+
+/* ============================================================
+   BOTÕES
+   ============================================================ */
+.btn-principal {
+    background-color: var(--azul-escuro);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 10px;
+    transition: background-color 0.2s;
+}
+
+.btn-principal:hover {
+    background-color: var(--azul-medio);
+}
+
+.btn-voltar {
+    background-color: #6c757d;
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.88rem;
+    transition: background-color 0.2s;
+}
+
+.btn-voltar:hover {
+    background-color: #5a6268;
+    color: white;
+}
+
+.btn-acao {
+    background-color: var(--verde);
+    color: white;
+    text-decoration: none;
+    padding: 9px 18px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+
+.btn-acao:hover {
+    background-color: #218838;
+    color: white;
+}
+
+/* ============================================================
+   FORMULÁRIOS
+   ============================================================ */
+.formulario-container {
+    background-color: var(--branco);
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: var(--sombra);
+    max-width: 480px;
+    margin: 0 auto 30px;
+}
+
+.campo-formulario {
+    margin-bottom: 20px;
+}
+
+.campo-formulario label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    font-size: 0.93rem;
+}
+
+.campo-formulario input,
+.campo-formulario select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 2px solid var(--cinza-borda);
+    border-radius: 6px;
+    font-size: 0.97rem;
+    color: var(--texto);
+    transition: border-color 0.2s;
+    background-color: #fafafa;
+}
+
+.campo-formulario input:focus,
+.campo-formulario select:focus {
+    outline: none;
+    border-color: var(--azul-medio);
+    background-color: white;
+}
+
+.campo-formulario small {
+    display: block;
+    margin-top: 5px;
+    color: #888;
+    font-size: 0.82rem;
+}
+
+/* ============================================================
+   TABELAS
+   ============================================================ */
+.tabela-container {
+    background-color: var(--branco);
+    border-radius: 10px;
+    box-shadow: var(--sombra);
+    overflow: hidden;
+    margin-bottom: 25px;
+}
+
+.tabela-container h2 {
+    padding: 18px 22px;
+    border-bottom: 2px solid var(--cinza-borda);
+    color: var(--azul-escuro);
+    font-size: 1.15rem;
+}
+
+.tabela {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tabela th {
+    background-color: var(--azul-escuro);
+    color: white;
+    padding: 12px 18px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.tabela td {
+    padding: 11px 18px;
+    border-bottom: 1px solid var(--cinza-borda);
+    font-size: 0.93rem;
+}
+
+.tabela tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+.tabela tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Linha com alerta (estoque baixo) */
+.linha-alerta {
+    background-color: #fff5f5 !important;
+    color: var(--vermelho);
+    font-weight: 500;
+}
+
+/* Linha de destaque (quarta-feira) */
+.linha-destaque {
+    background-color: #fffbeb !important;
+    font-weight: 600;
+}
+
+/* Linha de total no rodapé da tabela */
+.linha-total {
+    background-color: #e9ecef;
+}
+
+.linha-total td {
+    font-weight: bold;
+    font-size: 1rem;
+    border-top: 2px solid var(--cinza-borda);
+}
+
+/* ============================================================
+   RESUMO DO RELATÓRIO
+   ============================================================ */
+.resumo-relatorio {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+}
+
+.resumo-item {
+    background-color: var(--branco);
+    border-radius: 10px;
+    padding: 18px 25px;
+    box-shadow: var(--sombra);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 160px;
+}
+
+.resumo-rotulo {
+    font-size: 0.85rem;
+    color: #666;
+    font-weight: 500;
+}
+
+.resumo-valor {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: var(--azul-escuro);
+}
+
+.texto-verde {
+    color: var(--verde) !important;
+}
+
+/* ============================================================
+   DESTAQUE INFORMATIVO
+   ============================================================ */
+.destaque-info {
+    background-color: #e8f4f8;
+    border-left: 4px solid var(--azul-medio);
+    padding: 14px 20px;
+    border-radius: 6px;
+    margin-bottom: 22px;
+    font-size: 0.93rem;
+    color: #2c4a5a;
+}
+
+/* ============================================================
+   MENSAGEM SEM DADOS
+   ============================================================ */
+.sem-dados {
+    grid-column: 1 / -1;    /* Ocupa toda a largura na grade */
+    text-align: center;
+    padding: 50px 20px;
+    background-color: var(--branco);
+    border-radius: 10px;
+    box-shadow: var(--sombra);
+    color: #888;
+    font-size: 1.05rem;
+}
+
+.sem-dados a {
+    color: var(--azul-medio);
+    text-decoration: none;
+    font-weight: 600;
+    display: block;
+    margin-top: 10px;
+}
+
+.sem-dados a:hover {
+    text-decoration: underline;
+}
+
+/* ============================================================
+   RODAPÉ
+   ============================================================ */
+.rodape {
+    background-color: var(--azul-escuro);
+    color: rgba(255, 255, 255, 0.7);
+    text-align: center;
+    padding: 14px;
+    font-size: 0.82rem;
+}
+
+/* ============================================================
+   RESPONSIVIDADE — telas menores (celular/tablet)
+   ============================================================ */
+@media (max-width: 768px) {
+
+    .navbar {
+        flex-direction: column;
+        height: auto;
+        padding: 12px 16px;
+        gap: 10px;
+    }
+
+    .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 4px;
+    }
+
+    .grade-produtos {
+        grid-template-columns: 1fr;
+    }
+
+    .cabecalho-pagina {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .resumo-relatorio {
+        flex-direction: column;
+    }
+
+    .tabela {
+        font-size: 0.83rem;
+    }
+
+    .tabela th,
+    .tabela td {
+        padding: 9px 12px;
+    }
+}

@@ -12,7 +12,11 @@
       "PowerShell(git -C \"C:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" status)",
       "PowerShell(git -C \"C:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" commit -m \"Setup project configuration\")",
       "PowerShell(git -C \"C:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" push -u origin master 2>&1)",
-      "PowerShell(git -C \"C:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" log --oneline)"
+      "PowerShell(git -C \"C:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" log --oneline)",
+      "PowerShell(New-Item -Path \"c:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\\\\database\" -ItemType Directory -Force)",
+      "PowerShell(New-Item -Path \"c:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\\\\modules\" -ItemType Directory -Force)",
+      "PowerShell(New-Item -Path \"c:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\\\\templates\" -ItemType Directory -Force)",
+      "PowerShell(New-Item -Path \"c:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\\\\static\" -ItemType Directory -Force)"
     ]
   }
 }

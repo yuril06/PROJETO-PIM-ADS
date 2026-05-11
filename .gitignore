@@ -1,0 +1,12 @@
+# Arquivo com credenciais — NUNCA enviar ao GitHub
+.env
+
+# Ambientes virtuais Python
+venv/
+env/
+__pycache__/
+*.pyc
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
