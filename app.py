@@ -3,10 +3,6 @@
 # Sistema de Controle de Estoque - Cantina Escolar
 # Projeto PIM - ADS 1º Semestre
 # ============================================================
-# Tecnologias: Python + Flask + MySQL
-# Descrição: Gerenciamento de estoque para cantina de escola
-#            pública estadual em São Paulo
-# ============================================================
 
 from flask import Flask, render_template, request, redirect, url_for, flash
 from dotenv import load_dotenv
@@ -48,20 +44,24 @@ def painel():
     Exibe todos os produtos em cards.
     Produtos com estoque baixo aparecem em vermelho com aviso.
     """
-    # Variável que recebe a lista de todos os produtos
-    produtos = listar_produtos()
+    try:
+        # Variável que recebe a lista de todos os produtos
+        produtos = listar_produtos()
 
-    # Conta quantos produtos estão com estoque baixo
-    # Estrutura de repetição (for) + condicional (if)
-    total_alertas = 0
-    for produto in produtos:
-        if produto['estoque_baixo']:
-            total_alertas += 1
+        # Conta quantos produtos estão com estoque baixo
+        # Estrutura de repetição (for) + condicional (if)
+        total_alertas = 0
+        for produto in produtos:
+            if produto['estoque_baixo']:
+                total_alertas += 1
 
-    # Renderiza a página passando os dados dos produtos
-    return render_template('index.html',
-                           produtos=produtos,
-                           total_alertas=total_alertas)
+        return render_template('index.html',
+                               produtos=produtos,
+                               total_alertas=total_alertas)
+
+    except Exception as erro:
+        # Exibe página de erro amigável se o banco não estiver disponível
+        return render_template('erro_db.html', erro=str(erro)), 500
 
 
 # ============================================================
@@ -74,7 +74,6 @@ def cadastro():
     """
     Página para cadastrar novos produtos no estoque.
     """
-    # Verifica se o formulário foi enviado (método POST)
     if request.method == 'POST':
 
         # Lê os dados enviados pelo formulário HTML
@@ -100,17 +99,18 @@ def cadastro():
             flash('O estoque mínimo deve ser pelo menos 1.', 'erro')
             return render_template('cadastro.html')
 
-        # Tenta cadastrar o produto no banco de dados
-        sucesso = cadastrar_produto(nome, quantidade, preco, estoque_minimo)
+        try:
+            sucesso = cadastrar_produto(nome, quantidade, preco, estoque_minimo)
 
-        # Verifica o resultado e exibe mensagem ao usuário
-        if sucesso:
-            flash(f'Produto "{nome}" cadastrado com sucesso!', 'sucesso')
-            return redirect(url_for('painel'))
-        else:
-            flash('Erro ao cadastrar produto. Tente novamente.', 'erro')
+            if sucesso:
+                flash(f'Produto "{nome}" cadastrado com sucesso!', 'sucesso')
+                return redirect(url_for('painel'))
+            else:
+                flash('Erro ao cadastrar produto. Tente novamente.', 'erro')
 
-    # Método GET: apenas exibe o formulário vazio
+        except Exception as erro:
+            flash(f'Erro de banco de dados: {erro}', 'erro')
+
     return render_template('cadastro.html')
 
 
@@ -126,60 +126,57 @@ def venda():
     Após a venda, verifica se o produto atingiu o estoque mínimo
     e dispara notificação por e-mail automaticamente.
     """
-    # Busca produtos para preencher o select do formulário
-    produtos = listar_produtos()
+    try:
+        produtos = listar_produtos()
+    except Exception as erro:
+        return render_template('erro_db.html', erro=str(erro)), 500
 
     if request.method == 'POST':
 
-        # Lê os dados do formulário de venda
         produto_id = int(request.form['produto_id'])
         quantidade = int(request.form['quantidade'])
 
-        # Valida a quantidade informada
         if quantidade <= 0:
             flash('A quantidade deve ser maior que zero.', 'erro')
             return render_template('venda.html', produtos=produtos)
 
-        # Chama a função para registrar a venda no banco
-        resultado = registrar_venda(produto_id, quantidade)
+        try:
+            resultado = registrar_venda(produto_id, quantidade)
 
-        # Estrutura condicional (if/elif/else) para tratar o resultado
-        if resultado == 'sucesso':
-            flash('Venda registrada com sucesso!', 'sucesso')
+            # Estrutura condicional (if/elif) para tratar o resultado
+            if resultado == 'sucesso':
+                flash('Venda registrada com sucesso!', 'sucesso')
 
-            # Após a venda, verifica se o estoque ficou abaixo do mínimo
-            produto_atualizado = buscar_produto(produto_id)
+                produto_atualizado = buscar_produto(produto_id)
 
-            if produto_atualizado:
-                # Estrutura condicional (if) para verificar alerta
-                if produto_atualizado['quantidade'] <= produto_atualizado['estoque_minimo']:
+                if produto_atualizado:
+                    if produto_atualizado['quantidade'] <= produto_atualizado['estoque_minimo']:
+                        email_enviado = verificar_e_notificar(produto_atualizado)
 
-                    # Dispara notificação por e-mail (Camada 2)
-                    email_enviado = verificar_e_notificar(produto_atualizado)
+                        if email_enviado:
+                            flash(
+                                f'⚠️ ALERTA: "{produto_atualizado["nome"]}" atingiu '
+                                f'o estoque mínimo! E-mail enviado automaticamente.',
+                                'aviso'
+                            )
+                        else:
+                            flash(
+                                f'⚠️ ALERTA: "{produto_atualizado["nome"]}" atingiu '
+                                f'o estoque mínimo! Verifique o painel.',
+                                'aviso'
+                            )
 
-                    # Informa o usuário sobre o alerta
-                    if email_enviado:
-                        flash(
-                            f'⚠️ ALERTA: "{produto_atualizado["nome"]}" atingiu '
-                            f'o estoque mínimo! E-mail enviado automaticamente.',
-                            'aviso'
-                        )
-                    else:
-                        flash(
-                            f'⚠️ ALERTA: "{produto_atualizado["nome"]}" atingiu '
-                            f'o estoque mínimo! Verifique o painel.',
-                            'aviso'
-                        )
+            elif resultado == 'estoque_insuficiente':
+                flash('Estoque insuficiente para realizar esta venda.', 'erro')
 
-        elif resultado == 'estoque_insuficiente':
-            flash('Estoque insuficiente para realizar esta venda.', 'erro')
+            elif resultado == 'produto_nao_encontrado':
+                flash('Produto não encontrado no sistema.', 'erro')
 
-        elif resultado == 'produto_nao_encontrado':
-            flash('Produto não encontrado no sistema.', 'erro')
+        except Exception as erro:
+            flash(f'Erro ao registrar venda: {erro}', 'erro')
 
         return redirect(url_for('painel'))
 
-    # Método GET: exibe o formulário de venda
     return render_template('venda.html', produtos=produtos)
 
 
@@ -192,10 +189,11 @@ def relatorio():
     """
     Exibe o relatório de vendas do dia atual com totais.
     """
-    # Busca os dados do relatório do dia
-    dados = relatorio_diario()
-
-    return render_template('relatorio.html', dados=dados)
+    try:
+        dados = relatorio_diario()
+        return render_template('relatorio.html', dados=dados)
+    except Exception as erro:
+        return render_template('erro_db.html', erro=str(erro)), 500
 
 
 # ============================================================
@@ -208,23 +206,29 @@ def historico():
     Exibe o histórico de consumo agrupado por dia da semana.
     Destaca a quarta-feira, que historicamente tem maior consumo.
     """
-    # Busca o histórico geral por dia da semana
-    dados_semana = historico_por_dia_semana()
+    try:
+        dados_semana  = historico_por_dia_semana()
+        dados_produto = historico_por_produto()
+        return render_template('historico.html',
+                               historico=dados_semana,
+                               por_produto=dados_produto)
+    except Exception as erro:
+        return render_template('erro_db.html', erro=str(erro)), 500
 
-    # Busca o histórico detalhado por produto
-    dados_produto = historico_por_produto()
 
-    return render_template('historico.html',
-                           historico=dados_semana,
-                           por_produto=dados_produto)
+# ============================================================
+# ROTA: Verificação de saúde da aplicação
+# URL: /health — usada pelo Railway para checar se está online
+# ============================================================
+@app.route('/health')
+def health():
+    return {'status': 'ok'}, 200
 
 
 # ============================================================
 # INICIALIZAÇÃO DO SERVIDOR
 # ============================================================
 if __name__ == '__main__':
-    # Railway fornece a variável PORT automaticamente
-    # Em desenvolvimento local, usa a porta 5000 como padrão
     porta = int(os.getenv('PORT', 5000))
 
     print("=" * 55)
@@ -234,6 +238,5 @@ if __name__ == '__main__':
     print(f"  Acesse no navegador: http://localhost:{porta}")
     print("=" * 55)
 
-    # debug=False em produção (Railway), True apenas em desenvolvimento
     modo_debug = os.getenv('FLASK_ENV', 'production') == 'development'
     app.run(host='0.0.0.0', port=porta, debug=modo_debug)

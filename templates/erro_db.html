@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block titulo %}Erro de Conexão — Cantina Escolar{% endblock %}
+
+{% block conteudo %}
+
+<div style="text-align:center; padding: 60px 20px;">
+
+    <div style="font-size: 4rem; margin-bottom: 20px;">🔌</div>
+
+    <h2 style="color: #dc3545; margin-bottom: 15px;">
+        Banco de dados não configurado
+    </h2>
+
+    <p style="color: #555; max-width: 500px; margin: 0 auto 25px; line-height: 1.6;">
+        O sistema não conseguiu conectar ao banco de dados MySQL.<br>
+        Configure as variáveis de ambiente no painel do Railway e execute
+        o script <strong>database/schema.sql</strong> para criar as tabelas.
+    </p>
+
+    <div style="background:#f8d7da; border:1px solid #f5c6cb; border-radius:8px;
+                padding:15px; max-width:600px; margin:0 auto; text-align:left;
+                font-family: monospace; font-size: 0.85rem; color: #721c24;">
+        {{ erro }}
+    </div>
+
+    <div style="margin-top: 30px; background:#fff3cd; border-radius:8px;
+                padding:20px; max-width:500px; margin:25px auto 0; text-align:left;">
+        <strong>📋 Passos para corrigir:</strong>
+        <ol style="margin-top:10px; padding-left:20px; line-height:2;">
+            <li>No Railway: adicione o serviço <strong>MySQL</strong></li>
+            <li>Execute o arquivo <strong>database/schema.sql</strong> no banco</li>
+            <li>Verifique as variáveis de ambiente na aba <strong>Variables</strong></li>
+        </ol>
+    </div>
+
+</div>
+
+{% endblock %}
