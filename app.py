@@ -6,7 +6,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash
 from dotenv import load_dotenv
 import os
 
-from modules.estoque import cadastrar_produto, listar_produtos, buscar_produto, registrar_venda
+from modules.estoque import cadastrar_produto, listar_produtos, buscar_produto, registrar_venda, editar_produto, excluir_produto
 from modules.notificacao import verificar_e_notificar
 from modules.relatorio import relatorio_diario, historico_por_dia_semana, historico_por_produto
 
@@ -138,6 +138,67 @@ def historico():
         return render_template('historico.html', historico=dados_semana, por_produto=dados_produto)
     except Exception as erro:
         return render_template('erro_db.html', erro=str(erro)), 500
+
+
+# pagina de gerenciamento de produtos (tabela com editar e excluir)
+@app.route('/produtos')
+def gerenciar_produtos():
+    try:
+        produtos = listar_produtos()
+        return render_template('produtos.html', produtos=produtos)
+    except Exception as erro:
+        return render_template('erro_db.html', erro=str(erro)), 500
+
+
+# editar produto
+@app.route('/editar/<int:produto_id>', methods=['GET', 'POST'])
+def editar(produto_id):
+    try:
+        produto = buscar_produto(produto_id)
+    except Exception as erro:
+        return render_template('erro_db.html', erro=str(erro)), 500
+
+    if produto is None:
+        flash('Produto nao encontrado.', 'erro')
+        return redirect(url_for('gerenciar_produtos'))
+
+    if request.method == 'POST':
+        nome           = request.form['nome'].strip()
+        quantidade     = int(request.form['quantidade'])
+        preco          = float(request.form['preco'])
+        estoque_minimo = int(request.form['estoque_minimo'])
+
+        if not nome or quantidade < 0 or preco <= 0 or estoque_minimo < 1:
+            flash('Preencha todos os campos corretamente.', 'erro')
+            return render_template('editar.html', produto=produto)
+
+        ok = editar_produto(produto_id, nome, quantidade, preco, estoque_minimo)
+        if ok:
+            flash(f'Produto "{nome}" atualizado com sucesso!', 'sucesso')
+            return redirect(url_for('gerenciar_produtos'))
+        else:
+            flash('Erro ao atualizar produto.', 'erro')
+
+    return render_template('editar.html', produto=produto)
+
+
+# excluir produto
+@app.route('/excluir/<int:produto_id>', methods=['POST'])
+def excluir(produto_id):
+    try:
+        produto = buscar_produto(produto_id)
+        if produto:
+            ok = excluir_produto(produto_id)
+            if ok:
+                flash(f'Produto "{produto["nome"]}" excluido com sucesso.', 'sucesso')
+            else:
+                flash('Erro ao excluir produto.', 'erro')
+        else:
+            flash('Produto nao encontrado.', 'erro')
+    except Exception as erro:
+        flash(f'Erro: {erro}', 'erro')
+
+    return redirect(url_for('gerenciar_produtos'))
 
 
 # rota de health check para o Railway saber que o app esta rodando

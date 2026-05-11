@@ -243,6 +243,30 @@ body {
 
 .btn-acao:hover { background-color: #1b5e20; }
 
+.btn-editar {
+    background-color: #1565c0;
+    color: white;
+    text-decoration: none;
+    padding: 5px 11px;
+    border-radius: 4px;
+    font-size: 0.82rem;
+    margin-right: 4px;
+}
+
+.btn-editar:hover { background-color: #0d47a1; }
+
+.btn-excluir {
+    background-color: var(--vermelho);
+    color: white;
+    border: none;
+    padding: 5px 11px;
+    border-radius: 4px;
+    font-size: 0.82rem;
+    cursor: pointer;
+}
+
+.btn-excluir:hover { background-color: #b71c1c; }
+
 /* --- Formularios --- */
 .formulario-container {
     background-color: var(--branco);

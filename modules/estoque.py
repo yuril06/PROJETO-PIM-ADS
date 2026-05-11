@@ -112,3 +112,44 @@ def produtos_com_estoque_baixo():
     cursor.close()
     conexao.close()
     return produtos
+
+
+def editar_produto(produto_id, nome, quantidade, preco, estoque_minimo):
+    # atualiza os dados de um produto existente
+    try:
+        conexao = conectar()
+        cursor = conexao.cursor()
+
+        sql = """UPDATE produtos
+                 SET nome = %s, quantidade = %s, preco = %s, estoque_minimo = %s
+                 WHERE id = %s"""
+        cursor.execute(sql, (nome, quantidade, preco, estoque_minimo, produto_id))
+        conexao.commit()
+
+        cursor.close()
+        conexao.close()
+        return True
+
+    except Exception as erro:
+        print(f"Erro ao editar: {erro}")
+        return False
+
+
+def excluir_produto(produto_id):
+    # exclui um produto e suas vendas do banco
+    try:
+        conexao = conectar()
+        cursor = conexao.cursor()
+
+        # precisa excluir as vendas primeiro por causa da chave estrangeira
+        cursor.execute("DELETE FROM vendas WHERE produto_id = %s", (produto_id,))
+        cursor.execute("DELETE FROM produtos WHERE id = %s", (produto_id,))
+        conexao.commit()
+
+        cursor.close()
+        conexao.close()
+        return True
+
+    except Exception as erro:
+        print(f"Erro ao excluir: {erro}")
+        return False
