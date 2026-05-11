@@ -223,14 +223,17 @@ def historico():
 # INICIALIZAÇÃO DO SERVIDOR
 # ============================================================
 if __name__ == '__main__':
-    # Exibe informações de inicialização no terminal
+    # Railway fornece a variável PORT automaticamente
+    # Em desenvolvimento local, usa a porta 5000 como padrão
+    porta = int(os.getenv('PORT', 5000))
+
     print("=" * 55)
     print("  Sistema de Estoque - Cantina Escolar")
     print("  Projeto PIM - ADS 1º Semestre")
     print("=" * 55)
-    print("  Acesse no navegador: http://localhost:5000")
+    print(f"  Acesse no navegador: http://localhost:{porta}")
     print("=" * 55)
 
-    # Inicia o servidor Flask
-    # debug=True: recarrega automaticamente ao salvar o código
-    app.run(debug=True)
+    # debug=False em produção (Railway), True apenas em desenvolvimento
+    modo_debug = os.getenv('FLASK_ENV', 'production') == 'development'
+    app.run(host='0.0.0.0', port=porta, debug=modo_debug)
