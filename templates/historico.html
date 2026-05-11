@@ -1,30 +1,26 @@
 {% extends "base.html" %}
 
-{% block titulo %}Histórico de Consumo — Cantina Escolar{% endblock %}
+{% block titulo %}Historico de Consumo - Cantina Escolar{% endblock %}
 
 {% block conteudo %}
 
-<!-- ===== CABEÇALHO ===== -->
 <div class="cabecalho-pagina">
-    <h1>📅 Histórico de Consumo por Dia da Semana</h1>
-    <a href="{{ url_for('painel') }}" class="btn-voltar">← Voltar ao Painel</a>
+    <h1>Historico de Consumo por Dia da Semana</h1>
+    <a href="{{ url_for('painel') }}" class="btn-voltar">Voltar</a>
 </div>
 
-<!-- ===== INFORMAÇÃO CONTEXTUAL ===== -->
 <div class="destaque-info">
-    💡 <strong>Contexto:</strong> A quarta-feira historicamente tem o maior consumo
-    na cantina. Use este histórico para planejar as compras do diretor.
+    A quarta-feira historicamente tem o maior consumo na cantina.
+    Use este historico para planejar as compras.
 </div>
 
-<!-- ===== TABELA: CONSUMO POR DIA DA SEMANA ===== -->
 <div class="tabela-container">
-    <h2>📈 Total de Consumo por Dia da Semana</h2>
-
+    <h2>Consumo por Dia da Semana</h2>
     {% if historico %}
     <table class="tabela">
         <thead>
             <tr>
-                <th>Posição</th>
+                <th>Posicao</th>
                 <th>Dia da Semana</th>
                 <th>Total de Itens Vendidos</th>
                 <th>Total Arrecadado</th>
@@ -32,17 +28,11 @@
         </thead>
         <tbody>
             {% for dia in historico %}
-            <!--
-                A linha da quarta-feira recebe a classe "linha-destaque"
-                para ser destacada em amarelo na tabela.
-            -->
             <tr {% if dia['dia_semana'] == 'Quarta-feira' %}class="linha-destaque"{% endif %}>
-                <td>{{ loop.index }}º</td>
+                <td>{{ loop.index }}</td>
                 <td>
                     {{ dia['dia_semana'] }}
-                    {% if dia['dia_semana'] == 'Quarta-feira' %}
-                        🔥 <em>Maior movimento</em>
-                    {% endif %}
+                    {% if dia['dia_semana'] == 'Quarta-feira' %} - Maior movimento{% endif %}
                 </td>
                 <td>{{ dia['total_itens_vendidos'] }} itens</td>
                 <td>R$ {{ "%.2f"|format(dia['total_valor']) }}</td>
@@ -50,18 +40,14 @@
             {% endfor %}
         </tbody>
     </table>
-
     {% else %}
-    <p class="sem-dados">Nenhum histórico disponível. Registre algumas vendas primeiro!</p>
+    <p class="sem-dados">Nenhum historico disponivel. Registre algumas vendas primeiro.</p>
     {% endif %}
-
 </div>
 
-<!-- ===== TABELA: CONSUMO POR PRODUTO E DIA ===== -->
 {% if por_produto %}
 <div class="tabela-container">
-    <h2>🏷️ Detalhamento por Produto e Dia da Semana</h2>
-
+    <h2>Consumo por Produto e Dia da Semana</h2>
     <table class="tabela">
         <thead>
             <tr>
@@ -80,7 +66,6 @@
             {% endfor %}
         </tbody>
     </table>
-
 </div>
 {% endif %}
 

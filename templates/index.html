@@ -1,90 +1,66 @@
 {% extends "base.html" %}
 
-{% block titulo %}Painel de Estoque — Cantina Escolar{% endblock %}
+{% block titulo %}Painel de Estoque - Cantina Escolar{% endblock %}
 
 {% block conteudo %}
 
-<!-- ===== CABEÇALHO DA PÁGINA ===== -->
 <div class="cabecalho-pagina">
-    <h1>📦 Painel de Estoque</h1>
-    <a href="{{ url_for('cadastro') }}" class="btn-acao">➕ Novo Produto</a>
+    <h1>Painel de Estoque</h1>
+    <a href="{{ url_for('cadastro') }}" class="btn-acao">Novo Produto</a>
 </div>
 
-<!-- ===== BANNER DE ALERTA GERAL (Camada 1 de notificação) ===== -->
 {% if total_alertas > 0 %}
 <div class="banner-alerta">
-    ⚠️ Atenção: <strong>{{ total_alertas }} produto(s)</strong> com estoque abaixo do mínimo!
-    Os cards em vermelho precisam de reposição.
+    Atencao: {{ total_alertas }} produto(s) com estoque abaixo do minimo.
 </div>
 {% endif %}
 
-<!-- ===== GRADE DE CARDS DOS PRODUTOS ===== -->
 <div class="grade-produtos">
 
     {% if produtos %}
-
         {% for produto in produtos %}
-
-        <!--
-            Card do produto.
-            A classe CSS "estoque-baixo" é adicionada quando o produto
-            está abaixo do estoque mínimo, deixando o card VERMELHO.
-            Isso representa a Camada 1 do sistema de notificação visual.
-        -->
         <div class="card-produto {% if produto['estoque_baixo'] %}estoque-baixo{% endif %}">
 
-            <!-- Cabeçalho do card com nome e badge de alerta -->
             <div class="card-cabecalho">
                 <h3>{{ produto['nome'] }}</h3>
                 {% if produto['estoque_baixo'] %}
-                    <span class="badge-alerta">⚠️ BAIXO</span>
+                    <span class="badge-alerta">ESTOQUE BAIXO</span>
                 {% endif %}
             </div>
 
-            <!-- Informações do produto -->
             <div class="card-corpo">
-
                 <div class="info-produto">
                     <span class="rotulo">Quantidade:</span>
                     <span class="valor {% if produto['estoque_baixo'] %}texto-vermelho{% endif %}">
-                        <strong>{{ produto['quantidade'] }}</strong> un.
+                        {{ produto['quantidade'] }} un.
                     </span>
                 </div>
-
                 <div class="info-produto">
-                    <span class="rotulo">Preço:</span>
+                    <span class="rotulo">Preco:</span>
                     <span class="valor">R$ {{ "%.2f"|format(produto['preco']) }}</span>
                 </div>
-
                 <div class="info-produto">
-                    <span class="rotulo">Mínimo:</span>
+                    <span class="rotulo">Minimo:</span>
                     <span class="valor">{{ produto['estoque_minimo'] }} un.</span>
                 </div>
-
-                <!-- Aviso de estoque baixo dentro do card -->
                 {% if produto['estoque_baixo'] %}
                 <div class="aviso-estoque">
-                    🔴 Estoque abaixo do mínimo!<br>
-                    Providencie a reposição.
+                    Produto abaixo do estoque minimo. Providencie a reposicao.
                 </div>
                 {% endif %}
-
             </div>
 
-            <!-- Rodapé do card com data de cadastro -->
             <div class="card-rodape">
                 <small>Cadastrado em: {{ produto['data_cadastro'].strftime('%d/%m/%Y') }}</small>
             </div>
 
         </div>
-
         {% endfor %}
 
     {% else %}
-        <!-- Mensagem quando não há produtos cadastrados -->
         <div class="sem-dados">
             <p>Nenhum produto cadastrado ainda.</p>
-            <a href="{{ url_for('cadastro') }}">➕ Cadastre o primeiro produto!</a>
+            <a href="{{ url_for('cadastro') }}">Cadastre o primeiro produto</a>
         </div>
     {% endif %}
 

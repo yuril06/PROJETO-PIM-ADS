@@ -1,43 +1,37 @@
 {% extends "base.html" %}
 
-{% block titulo %}Relatório Diário — Cantina Escolar{% endblock %}
+{% block titulo %}Relatorio Diario - Cantina Escolar{% endblock %}
 
 {% block conteudo %}
 
-<!-- ===== CABEÇALHO ===== -->
 <div class="cabecalho-pagina">
-    <h1>📊 Relatório Diário de Vendas</h1>
-    <a href="{{ url_for('painel') }}" class="btn-voltar">← Voltar ao Painel</a>
+    <h1>Relatorio Diario de Vendas</h1>
+    <a href="{{ url_for('painel') }}" class="btn-voltar">Voltar</a>
 </div>
 
-<!-- ===== RESUMO DO DIA ===== -->
 <div class="resumo-relatorio">
     <div class="resumo-item">
-        <span class="resumo-rotulo">📅 Data</span>
+        <span class="resumo-rotulo">Data</span>
         <span class="resumo-valor">{{ dados['data'] }}</span>
     </div>
     <div class="resumo-item">
-        <span class="resumo-rotulo">💰 Total Arrecadado</span>
-        <span class="resumo-valor texto-verde">
-            R$ {{ "%.2f"|format(dados['total_geral']) }}
-        </span>
+        <span class="resumo-rotulo">Total Arrecadado</span>
+        <span class="resumo-valor texto-verde">R$ {{ "%.2f"|format(dados['total_geral']) }}</span>
     </div>
     <div class="resumo-item">
-        <span class="resumo-rotulo">🛒 Produtos Vendidos</span>
+        <span class="resumo-rotulo">Produtos Vendidos</span>
         <span class="resumo-valor">{{ dados['vendas']|length }}</span>
     </div>
 </div>
 
-<!-- ===== TABELA DE VENDAS DO DIA ===== -->
 <div class="tabela-container">
     <h2>Detalhamento de Vendas</h2>
-
     {% if dados['vendas'] %}
     <table class="tabela">
         <thead>
             <tr>
                 <th>Produto</th>
-                <th>Preço Unit.</th>
+                <th>Preco Unit.</th>
                 <th>Qtd. Vendida</th>
                 <th>Total</th>
                 <th>Dia da Semana</th>
@@ -54,21 +48,16 @@
             </tr>
             {% endfor %}
         </tbody>
-        <!-- Rodapé com total geral -->
         <tfoot>
             <tr class="linha-total">
                 <td colspan="3"><strong>TOTAL DO DIA</strong></td>
-                <td colspan="2">
-                    <strong>R$ {{ "%.2f"|format(dados['total_geral']) }}</strong>
-                </td>
+                <td colspan="2"><strong>R$ {{ "%.2f"|format(dados['total_geral']) }}</strong></td>
             </tr>
         </tfoot>
     </table>
-
     {% else %}
     <p class="sem-dados">Nenhuma venda registrada hoje.</p>
     {% endif %}
-
 </div>
 
 {% endblock %}
