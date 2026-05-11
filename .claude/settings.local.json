@@ -9,7 +9,9 @@
       "PowerShell(git -C \"C:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" config user.email \"yurilimamoreiradasilva@gmail.com\")",
       "PowerShell(git -C \"C:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" config user.name \"yuril06\")",
       "PowerShell(git -C \"C:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" add -A)",
-      "PowerShell(git -C \"C:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" status)"
+      "PowerShell(git -C \"C:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" status)",
+      "PowerShell(git -C \"C:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" commit -m \"Setup project configuration\")",
+      "PowerShell(git -C \"C:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" push -u origin master 2>&1)"
     ]
   }
 }
