@@ -16,7 +16,10 @@
       "PowerShell(New-Item -Path \"c:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\\\\database\" -ItemType Directory -Force)",
       "PowerShell(New-Item -Path \"c:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\\\\modules\" -ItemType Directory -Force)",
       "PowerShell(New-Item -Path \"c:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\\\\templates\" -ItemType Directory -Force)",
-      "PowerShell(New-Item -Path \"c:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\\\\static\" -ItemType Directory -Force)"
+      "PowerShell(New-Item -Path \"c:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\\\\static\" -ItemType Directory -Force)",
+      "PowerShell(git -C \"C:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" push origin master 2>&1)",
+      "PowerShell(git -C \"C:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" show --name-only b7ed2bc)",
+      "PowerShell(head -30)"
     ]
   }
 }
