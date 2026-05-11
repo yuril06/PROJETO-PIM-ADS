@@ -21,7 +21,8 @@
       "PowerShell(git -C \"C:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" show --name-only b7ed2bc)",
       "PowerShell(head -30)",
       "PowerShell(git -C \"C:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" log --oneline -5)",
-      "PowerShell(git -C \"C:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" commit -m \"Fix gunicorn port binding\")"
+      "PowerShell(git -C \"C:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" commit -m \"Fix gunicorn port binding\")",
+      "PowerShell(git -C \"C:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" commit -m \"Remove text from historico\")"
     ]
   }
 }
