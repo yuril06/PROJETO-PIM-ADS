@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(git -C \"c:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" init)",
+      "PowerShell(git -C \"c:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" remote add origin https://github.com/yuril06/PROJETO-PIM-ADS.git 2>&1)",
+      "Skill(update-config)",
+      "Skill(update-config:*)",
+      "PowerShell(git -C \"C:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" remote -v)",
+      "PowerShell(git -C \"C:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" config user.email \"yurilimamoreiradasilva@gmail.com\")",
+      "PowerShell(git -C \"C:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" config user.name \"yuril06\")",
+      "PowerShell(git -C \"C:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" add -A)",
+      "PowerShell(git -C \"C:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" status)"
+    ]
+  }
+}

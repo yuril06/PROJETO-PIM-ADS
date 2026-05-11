@@ -1,0 +1,21 @@
+{
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "powershell",
+            "command": "$repo = 'C:/Users/Yuri/OneDrive/Desktop/projeto-pim-ads'; git -C $repo add -A; $changes = git -C $repo status --porcelain; if ($changes) { $files = (git -C $repo diff --cached --name-only) -join ', '; $msg = if ($files.Length -gt 60) { 'Update multiple files' } else { 'Update: ' + $files }; git -C $repo commit -m $msg; git -C $repo push origin main }",
+            "timeout": 60,
+            "statusMessage": "Sincronizando com GitHub..."
+          }
+        ]
+      }
+    ]
+  }
+}
