@@ -1,29 +1,20 @@
-# envio de e-mail de alerta usando smtplib (biblioteca nativa do Python)
-import smtplib
+# envio de e-mail de alerta usando Resend
+import resend
 import os
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 from dotenv import load_dotenv
 
 load_dotenv()
 
 
 def enviar_email_alerta(produto_nome, quantidade_atual, quantidade_minima):
-    # le as credenciais do arquivo .env
-    remetente    = os.getenv('EMAIL_REMETENTE')
-    senha        = os.getenv('EMAIL_SENHA_APP')
+    api_key     = os.getenv('RESEND_API_KEY')
     destinatario = os.getenv('EMAIL_DESTINATARIO')
 
-    # se nao tiver configurado, nao tenta enviar
-    if not remetente or not senha or not destinatario:
-        print("Credenciais de e-mail nao configuradas no .env")
+    if not api_key or not destinatario:
+        print("RESEND_API_KEY ou EMAIL_DESTINATARIO nao configurados")
         return False
 
-    # monta o e-mail
-    mensagem = MIMEMultipart('alternative')
-    mensagem['From']    = remetente
-    mensagem['To']      = destinatario
-    mensagem['Subject'] = f'Estoque Baixo - {produto_nome}'
+    resend.api_key = api_key
 
     corpo = f"""
     <html><body style="font-family: Arial, sans-serif; padding: 20px;">
@@ -43,21 +34,15 @@ def enviar_email_alerta(produto_nome, quantidade_atual, quantidade_minima):
     </body></html>
     """
 
-    mensagem.attach(MIMEText(corpo, 'html', 'utf-8'))
-
-    # conecta no servidor do Gmail e envia
     try:
-        servidor = smtplib.SMTP('smtp.gmail.com', 587)
-        servidor.starttls()
-        servidor.login(remetente, senha)
-        servidor.sendmail(remetente, destinatario, mensagem.as_string())
-        servidor.quit()
+        resend.Emails.send({
+            "from": "onboarding@resend.dev",
+            "to": destinatario,
+            "subject": f"Estoque Baixo - {produto_nome}",
+            "html": corpo
+        })
         print(f"E-mail enviado para {destinatario}")
         return True
-
-    except smtplib.SMTPAuthenticationError:
-        print("Erro de autenticacao: verifique EMAIL_REMETENTE e EMAIL_SENHA_APP")
-        return False
 
     except Exception as erro:
         print(f"Erro ao enviar e-mail: {erro}")
@@ -65,7 +50,6 @@ def enviar_email_alerta(produto_nome, quantidade_atual, quantidade_minima):
 
 
 def verificar_e_notificar(produto):
-    # envia alerta se o produto estiver abaixo do minimo
     if produto['quantidade'] <= produto['estoque_minimo']:
         return enviar_email_alerta(produto['nome'], produto['quantidade'], produto['estoque_minimo'])
     return False
