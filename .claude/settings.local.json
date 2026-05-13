@@ -22,7 +22,10 @@
       "PowerShell(head -30)",
       "PowerShell(git -C \"C:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" log --oneline -5)",
       "PowerShell(git -C \"C:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" commit -m \"Fix gunicorn port binding\")",
-      "PowerShell(git -C \"C:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" commit -m \"Remove text from historico\")"
+      "PowerShell(git -C \"C:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" commit -m \"Remove text from historico\")",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)"
     ]
   }
 }
