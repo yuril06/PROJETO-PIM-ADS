@@ -3,22 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block titulo %}Cantina Escolar{% endblock %}</title>
+    <title>Login - Cantina Escolar</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
     <nav class="navbar">
         <div class="nav-brand">Cantina Escolar</div>
-        <ul class="nav-links">
-            <li><a href="{{ url_for('painel') }}">Painel</a></li>
-            <li><a href="{{ url_for('gerenciar_produtos') }}">Produtos</a></li>
-            <li><a href="{{ url_for('cadastro') }}">Cadastrar</a></li>
-            <li><a href="{{ url_for('venda') }}">Registrar Venda</a></li>
-            <li><a href="{{ url_for('relatorio') }}">Relatorio</a></li>
-            <li><a href="{{ url_for('historico') }}">Historico</a></li>
-            <li><a href="{{ url_for('logout') }}">Sair</a></li>
-        </ul>
     </nav>
 
     <main class="container">
@@ -31,7 +22,23 @@
             {% endif %}
         {% endwith %}
 
-        {% block conteudo %}{% endblock %}
+        <div class="formulario-container" style="margin-top: 60px;">
+            <h2 style="margin-bottom: 20px; color: var(--azul); font-size: 1.2rem;">Acesso ao Sistema</h2>
+
+            <form method="POST" action="{{ url_for('login') }}">
+                <div class="campo-formulario">
+                    <label for="usuario">Usuario</label>
+                    <input type="text" id="usuario" name="usuario" required autofocus>
+                </div>
+
+                <div class="campo-formulario">
+                    <label for="senha">Senha</label>
+                    <input type="password" id="senha" name="senha" required>
+                </div>
+
+                <button type="submit" class="btn-principal">Entrar</button>
+            </form>
+        </div>
 
     </main>
 

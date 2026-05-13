@@ -2,8 +2,9 @@
 # projeto PIM - ADS 1 semestre
 # tecnologias: Python, Flask, MySQL
 
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from dotenv import load_dotenv
+from functools import wraps
 import os
 
 from modules.estoque import cadastrar_produto, listar_produtos, buscar_produto, registrar_venda, editar_produto, excluir_produto
@@ -16,8 +17,51 @@ app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'cantina_escola_2024')
 
 
+# decorator que protege rotas — redireciona para login se nao estiver logado
+def login_required(f):
+    @wraps(f)
+    def verificar(*args, **kwargs):
+        if not session.get('logado'):
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return verificar
+
+
+# pagina de login
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    # se ja estiver logado, manda pro painel
+    if session.get('logado'):
+        return redirect(url_for('painel'))
+
+    if request.method == 'POST':
+        usuario = request.form['usuario']
+        senha   = request.form['senha']
+
+        # le as credenciais das variaveis de ambiente
+        usuario_correto = os.getenv('ADMIN_USER', 'admin')
+        senha_correta   = os.getenv('ADMIN_PASSWORD', 'cantina123')
+
+        # verifica se usuario e senha estao corretos
+        if usuario == usuario_correto and senha == senha_correta:
+            session['logado'] = True
+            return redirect(url_for('painel'))
+        else:
+            flash('Usuario ou senha incorretos.', 'erro')
+
+    return render_template('login.html')
+
+
+# logout
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect(url_for('login'))
+
+
 # pagina principal - mostra todos os produtos
 @app.route('/')
+@login_required
 def painel():
     try:
         produtos = listar_produtos()
@@ -36,6 +80,7 @@ def painel():
 
 # pagina de cadastro de produto
 @app.route('/cadastro', methods=['GET', 'POST'])
+@login_required
 def cadastro():
     if request.method == 'POST':
         nome           = request.form['nome'].strip()
@@ -75,6 +120,7 @@ def cadastro():
 
 # pagina de registro de venda
 @app.route('/venda', methods=['GET', 'POST'])
+@login_required
 def venda():
     try:
         produtos = listar_produtos()
@@ -119,29 +165,9 @@ def venda():
     return render_template('venda.html', produtos=produtos)
 
 
-# pagina de relatorio diario
-@app.route('/relatorio')
-def relatorio():
-    try:
-        dados = relatorio_diario()
-        return render_template('relatorio.html', dados=dados)
-    except Exception as erro:
-        return render_template('erro_db.html', erro=str(erro)), 500
-
-
-# pagina de historico por dia da semana
-@app.route('/historico')
-def historico():
-    try:
-        dados_semana  = historico_por_dia_semana()
-        dados_produto = historico_por_produto()
-        return render_template('historico.html', historico=dados_semana, por_produto=dados_produto)
-    except Exception as erro:
-        return render_template('erro_db.html', erro=str(erro)), 500
-
-
-# pagina de gerenciamento de produtos (tabela com editar e excluir)
+# pagina de gerenciamento de produtos
 @app.route('/produtos')
+@login_required
 def gerenciar_produtos():
     try:
         produtos = listar_produtos()
@@ -152,6 +178,7 @@ def gerenciar_produtos():
 
 # editar produto
 @app.route('/editar/<int:produto_id>', methods=['GET', 'POST'])
+@login_required
 def editar(produto_id):
     try:
         produto = buscar_produto(produto_id)
@@ -184,6 +211,7 @@ def editar(produto_id):
 
 # excluir produto
 @app.route('/excluir/<int:produto_id>', methods=['POST'])
+@login_required
 def excluir(produto_id):
     try:
         produto = buscar_produto(produto_id)
@@ -201,7 +229,30 @@ def excluir(produto_id):
     return redirect(url_for('gerenciar_produtos'))
 
 
-# rota de health check para o Railway saber que o app esta rodando
+# pagina de relatorio diario
+@app.route('/relatorio')
+@login_required
+def relatorio():
+    try:
+        dados = relatorio_diario()
+        return render_template('relatorio.html', dados=dados)
+    except Exception as erro:
+        return render_template('erro_db.html', erro=str(erro)), 500
+
+
+# pagina de historico por dia da semana
+@app.route('/historico')
+@login_required
+def historico():
+    try:
+        dados_semana  = historico_por_dia_semana()
+        dados_produto = historico_por_produto()
+        return render_template('historico.html', historico=dados_semana, por_produto=dados_produto)
+    except Exception as erro:
+        return render_template('erro_db.html', erro=str(erro)), 500
+
+
+# health check para o Railway
 @app.route('/health')
 def health():
     return {'status': 'ok'}, 200
