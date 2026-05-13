@@ -9,6 +9,58 @@
     <a href="{{ url_for('painel') }}" class="btn-voltar">Voltar</a>
 </div>
 
+<form method="GET" action="{{ url_for('historico') }}" class="form-busca-data">
+    <input type="date" name="data" value="{{ data_buscada }}">
+    <button type="submit" class="btn-busca">&#128269; Buscar dia</button>
+</form>
+
+{% if resultado_data %}
+<div class="tabela-container">
+    <h2>Vendas de {{ resultado_data['data'] }}</h2>
+    {% if resultado_data['vendas'] %}
+    <table class="tabela">
+        <thead>
+            <tr>
+                <th>Produto</th>
+                <th>Preco Unit.</th>
+                <th>Qtd.</th>
+                <th>Total</th>
+                <th>Horario</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for venda in resultado_data['vendas'] %}
+            <tr>
+                <td>{{ venda['produto_nome'] }}</td>
+                <td>R$ {{ "%.2f"|format(venda['preco_unitario']) }}</td>
+                <td>{{ venda['quantidade'] }}</td>
+                <td>R$ {{ "%.2f"|format(venda['total_valor']) }}</td>
+                <td>{{ venda['data_venda'].strftime('%H:%M') }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('excluir_venda_route', venda_id=venda['id']) }}"
+                          onsubmit="return confirm('Excluir esta venda e restaurar o estoque?')">
+                        <input type="hidden" name="origem" value="historico">
+                        <input type="hidden" name="data" value="{{ resultado_data['data_input'] }}">
+                        <button type="submit" class="btn-excluir">Excluir</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr class="linha-total">
+                <td colspan="3"><strong>TOTAL</strong></td>
+                <td><strong>R$ {{ "%.2f"|format(resultado_data['total_geral']) }}</strong></td>
+                <td colspan="2"></td>
+            </tr>
+        </tfoot>
+    </table>
+    {% else %}
+    <p class="sem-dados">Nenhuma venda registrada nesta data.</p>
+    {% endif %}
+</div>
+{% endif %}
 
 <div class="tabela-container">
     <h2>Consumo por Dia da Semana</h2>
@@ -24,12 +76,9 @@
         </thead>
         <tbody>
             {% for dia in historico %}
-            <tr {% if dia['dia_semana'] == 'Quarta-feira' %}class="linha-destaque"{% endif %}>
+            <tr {% if loop.index == 1 %}class="linha-destaque"{% endif %}>
                 <td>{{ loop.index }}</td>
-                <td>
-                    {{ dia['dia_semana'] }}
-                    {% if dia['dia_semana'] == 'Quarta-feira' %} - Maior movimento{% endif %}
-                </td>
+                <td>{{ dia['dia_semana'] }}</td>
                 <td>{{ dia['total_itens_vendidos'] }} itens</td>
                 <td>R$ {{ "%.2f"|format(dia['total_valor']) }}</td>
             </tr>
@@ -54,7 +103,7 @@
         </thead>
         <tbody>
             {% for item in por_produto %}
-            <tr {% if item['dia_semana'] == 'Quarta-feira' %}class="linha-destaque"{% endif %}>
+            <tr>
                 <td>{{ item['produto_nome'] }}</td>
                 <td>{{ item['dia_semana'] }}</td>
                 <td>{{ item['total_vendido'] }} un.</td>

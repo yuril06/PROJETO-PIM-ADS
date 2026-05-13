@@ -5,9 +5,14 @@
 {% block conteudo %}
 
 <div class="cabecalho-pagina">
-    <h1>Relatorio Diario de Vendas</h1>
+    <h1>Relatorio de Vendas</h1>
     <a href="{{ url_for('painel') }}" class="btn-voltar">Voltar</a>
 </div>
+
+<form method="GET" action="{{ url_for('relatorio') }}" class="form-busca-data">
+    <input type="date" name="data" value="{{ dados['data_input'] }}">
+    <button type="submit" class="btn-busca">&#128269; Buscar</button>
+</form>
 
 <div class="resumo-relatorio">
     <div class="resumo-item">
@@ -19,7 +24,7 @@
         <span class="resumo-valor texto-verde">R$ {{ "%.2f"|format(dados['total_geral']) }}</span>
     </div>
     <div class="resumo-item">
-        <span class="resumo-rotulo">Produtos Vendidos</span>
+        <span class="resumo-rotulo">Vendas Registradas</span>
         <span class="resumo-valor">{{ dados['vendas']|length }}</span>
     </div>
 </div>
@@ -32,9 +37,11 @@
             <tr>
                 <th>Produto</th>
                 <th>Preco Unit.</th>
-                <th>Qtd. Vendida</th>
+                <th>Qtd.</th>
                 <th>Total</th>
-                <th>Dia da Semana</th>
+                <th>Dia</th>
+                <th>Horario</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -42,21 +49,31 @@
             <tr>
                 <td>{{ venda['produto_nome'] }}</td>
                 <td>R$ {{ "%.2f"|format(venda['preco_unitario']) }}</td>
-                <td>{{ venda['total_vendido'] }}</td>
+                <td>{{ venda['quantidade'] }}</td>
                 <td>R$ {{ "%.2f"|format(venda['total_valor']) }}</td>
                 <td>{{ venda['dia_semana'] }}</td>
+                <td>{{ venda['data_venda'].strftime('%H:%M') }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('excluir_venda_route', venda_id=venda['id']) }}"
+                          onsubmit="return confirm('Excluir esta venda e restaurar o estoque?')">
+                        <input type="hidden" name="origem" value="relatorio">
+                        <input type="hidden" name="data" value="{{ dados['data_input'] }}">
+                        <button type="submit" class="btn-excluir">Excluir</button>
+                    </form>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
         <tfoot>
             <tr class="linha-total">
-                <td colspan="3"><strong>TOTAL DO DIA</strong></td>
-                <td colspan="2"><strong>R$ {{ "%.2f"|format(dados['total_geral']) }}</strong></td>
+                <td colspan="3"><strong>TOTAL</strong></td>
+                <td><strong>R$ {{ "%.2f"|format(dados['total_geral']) }}</strong></td>
+                <td colspan="3"></td>
             </tr>
         </tfoot>
     </table>
     {% else %}
-    <p class="sem-dados">Nenhuma venda registrada hoje.</p>
+    <p class="sem-dados">Nenhuma venda registrada nesta data.</p>
     {% endif %}
 </div>
 

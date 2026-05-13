@@ -135,6 +135,34 @@ def editar_produto(produto_id, nome, quantidade, preco, estoque_minimo):
         return False
 
 
+def excluir_venda(venda_id):
+    # exclui uma venda e devolve a quantidade ao estoque
+    try:
+        conexao = conectar()
+        cursor = conexao.cursor(dictionary=True)
+
+        cursor.execute("SELECT * FROM vendas WHERE id = %s", (venda_id,))
+        venda = cursor.fetchone()
+
+        if venda is None:
+            cursor.close()
+            conexao.close()
+            return False
+
+        cursor.execute("UPDATE produtos SET quantidade = quantidade + %s WHERE id = %s",
+                       (venda['quantidade'], venda['produto_id']))
+        cursor.execute("DELETE FROM vendas WHERE id = %s", (venda_id,))
+        conexao.commit()
+
+        cursor.close()
+        conexao.close()
+        return True
+
+    except Exception as erro:
+        print(f"Erro ao excluir venda: {erro}")
+        return False
+
+
 def excluir_produto(produto_id):
     # exclui um produto e suas vendas do banco
     try:

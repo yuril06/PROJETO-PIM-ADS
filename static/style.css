@@ -309,6 +309,34 @@ body {
     font-size: 0.81rem;
 }
 
+/* --- Busca por data --- */
+.form-busca-data {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.form-busca-data input[type="date"] {
+    padding: 8px 12px;
+    border: 1px solid var(--borda);
+    border-radius: 4px;
+    font-size: 0.92rem;
+    color: var(--texto);
+}
+
+.btn-busca {
+    background-color: var(--azul);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.btn-busca:hover { background-color: var(--azul-hover); }
+
 /* --- Tabelas --- */
 .tabela-container {
     background-color: var(--branco);

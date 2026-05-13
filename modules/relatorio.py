@@ -3,29 +3,27 @@ import datetime
 from modules.db import conectar
 
 
-def relatorio_diario():
-    # busca as vendas do dia atual agrupadas por produto
+def relatorio_diario(data=None):
+    # busca as vendas de uma data especifica, registro por registro
     conexao = conectar()
     cursor = conexao.cursor(dictionary=True)
 
-    hoje = datetime.date.today()
+    if data is None:
+        data = datetime.date.today()
 
     sql = """
-        SELECT p.nome AS produto_nome, p.preco AS preco_unitario,
-               SUM(v.quantidade) AS total_vendido,
-               SUM(v.quantidade * p.preco) AS total_valor,
-               v.dia_semana
+        SELECT v.id, p.nome AS produto_nome, p.preco AS preco_unitario,
+               v.quantidade, (v.quantidade * p.preco) AS total_valor,
+               v.dia_semana, v.data_venda
         FROM vendas v
         JOIN produtos p ON v.produto_id = p.id
         WHERE DATE(v.data_venda) = %s
-        GROUP BY p.id, p.nome, p.preco, v.dia_semana
-        ORDER BY total_vendido DESC
+        ORDER BY v.data_venda DESC
     """
 
-    cursor.execute(sql, (hoje,))
+    cursor.execute(sql, (data,))
     vendas = cursor.fetchall()
 
-    # soma o total geral do dia usando for
     total_geral = 0.0
     for venda in vendas:
         total_geral += float(venda['total_valor'])
@@ -34,7 +32,8 @@ def relatorio_diario():
     conexao.close()
 
     return {
-        'data': hoje.strftime('%d/%m/%Y'),
+        'data': data.strftime('%d/%m/%Y'),
+        'data_input': data.strftime('%Y-%m-%d'),
         'vendas': vendas,
         'total_geral': total_geral
     }
@@ -83,3 +82,36 @@ def historico_por_produto():
     cursor.close()
     conexao.close()
     return historico
+
+
+def vendas_por_data(data):
+    # retorna registros individuais de uma data para busca no historico
+    conexao = conectar()
+    cursor = conexao.cursor(dictionary=True)
+
+    sql = """
+        SELECT v.id, p.nome AS produto_nome, p.preco AS preco_unitario,
+               v.quantidade, (v.quantidade * p.preco) AS total_valor,
+               v.dia_semana, v.data_venda
+        FROM vendas v
+        JOIN produtos p ON v.produto_id = p.id
+        WHERE DATE(v.data_venda) = %s
+        ORDER BY v.data_venda DESC
+    """
+
+    cursor.execute(sql, (data,))
+    vendas = cursor.fetchall()
+
+    total_geral = 0.0
+    for venda in vendas:
+        total_geral += float(venda['total_valor'])
+
+    cursor.close()
+    conexao.close()
+
+    return {
+        'data': data.strftime('%d/%m/%Y'),
+        'data_input': data.strftime('%Y-%m-%d'),
+        'vendas': vendas,
+        'total_geral': total_geral
+    }

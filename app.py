@@ -7,9 +7,10 @@ from dotenv import load_dotenv
 from functools import wraps
 import os
 
-from modules.estoque import cadastrar_produto, listar_produtos, buscar_produto, registrar_venda, editar_produto, excluir_produto
+from modules.estoque import cadastrar_produto, listar_produtos, buscar_produto, registrar_venda, editar_produto, excluir_produto, excluir_venda
 from modules.notificacao import verificar_e_notificar
-from modules.relatorio import relatorio_diario, historico_por_dia_semana, historico_por_produto
+from modules.relatorio import relatorio_diario, historico_por_dia_semana, historico_por_produto, vendas_por_data
+import datetime
 
 load_dotenv()
 
@@ -229,25 +230,51 @@ def excluir(produto_id):
     return redirect(url_for('gerenciar_produtos'))
 
 
-# pagina de relatorio diario
+# pagina de relatorio diario com filtro de data
 @app.route('/relatorio')
 @login_required
 def relatorio():
     try:
-        dados = relatorio_diario()
+        data_str = request.args.get('data')
+        if data_str:
+            data = datetime.date.fromisoformat(data_str)
+        else:
+            data = datetime.date.today()
+        dados = relatorio_diario(data)
         return render_template('relatorio.html', dados=dados)
     except Exception as erro:
         return render_template('erro_db.html', erro=str(erro)), 500
 
 
-# pagina de historico por dia da semana
+# excluir uma venda e restaurar estoque
+@app.route('/excluir_venda/<int:venda_id>', methods=['POST'])
+@login_required
+def excluir_venda_route(venda_id):
+    origem = request.form.get('origem', 'relatorio')
+    data   = request.form.get('data', '')
+    ok = excluir_venda(venda_id)
+    if ok:
+        flash('Venda excluida. Estoque restaurado.', 'sucesso')
+    else:
+        flash('Erro ao excluir venda.', 'erro')
+    if origem == 'historico':
+        return redirect(url_for('historico', data=data))
+    return redirect(url_for('relatorio', data=data))
+
+
+# pagina de historico por dia da semana com busca por data
 @app.route('/historico')
 @login_required
 def historico():
     try:
         dados_semana  = historico_por_dia_semana()
         dados_produto = historico_por_produto()
-        return render_template('historico.html', historico=dados_semana, por_produto=dados_produto)
+        data_str = request.args.get('data')
+        resultado_data = None
+        if data_str:
+            data = datetime.date.fromisoformat(data_str)
+            resultado_data = vendas_por_data(data)
+        return render_template('historico.html', historico=dados_semana, por_produto=dados_produto, resultado_data=resultado_data, data_buscada=data_str or '')
     except Exception as erro:
         return render_template('erro_db.html', erro=str(erro)), 500
 
