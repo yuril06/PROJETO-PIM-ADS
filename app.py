@@ -270,11 +270,12 @@ def historico():
         dados_semana  = historico_por_dia_semana()
         dados_produto = historico_por_produto()
         data_str = request.args.get('data')
-        resultado_data = None
         if data_str:
             data = datetime.date.fromisoformat(data_str)
-            resultado_data = vendas_por_data(data)
-        return render_template('historico.html', historico=dados_semana, por_produto=dados_produto, resultado_data=resultado_data, data_buscada=data_str or '')
+        else:
+            data = datetime.date.today()
+        resultado_data = vendas_por_data(data)
+        return render_template('historico.html', historico=dados_semana, por_produto=dados_produto, resultado_data=resultado_data, data_buscada=data.strftime('%Y-%m-%d'))
     except Exception as erro:
         return render_template('erro_db.html', erro=str(erro)), 500
 

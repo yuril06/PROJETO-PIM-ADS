@@ -14,7 +14,6 @@
     <button type="submit" class="btn-busca">&#128269; Buscar dia</button>
 </form>
 
-{% if resultado_data %}
 <div class="tabela-container">
     <h2>Vendas de {{ resultado_data['data'] }}</h2>
     {% if resultado_data['vendas'] %}
@@ -60,7 +59,6 @@
     <p class="sem-dados">Nenhuma venda registrada nesta data.</p>
     {% endif %}
 </div>
-{% endif %}
 
 <div class="tabela-container">
     <h2>Consumo por Dia da Semana</h2>
