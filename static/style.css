@@ -343,6 +343,35 @@ body {
     font-weight: bold;
 }
 
+/* --- Campo senha com olho --- */
+.campo-senha {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--borda);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.campo-senha input {
+    border: none;
+    flex: 1;
+    padding: 9px 12px;
+    font-size: 0.95rem;
+    color: var(--texto);
+    outline: none;
+}
+
+.btn-olho {
+    background: none;
+    border: none;
+    padding: 0 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    color: #777;
+}
+
+.btn-olho:hover { color: var(--azul); }
+
 /* --- Busca por data --- */
 .form-busca-data {
     display: flex;

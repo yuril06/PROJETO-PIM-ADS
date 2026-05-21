@@ -33,11 +33,21 @@
 
                 <div class="campo-formulario">
                     <label for="senha">Senha</label>
-                    <input type="password" id="senha" name="senha" required>
+                    <div class="campo-senha">
+                        <input type="password" id="senha" name="senha" required>
+                        <button type="button" class="btn-olho" onclick="toggleSenha()">&#128065;</button>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn-principal">Entrar</button>
             </form>
+
+            <script>
+            function toggleSenha() {
+                var input = document.getElementById('senha');
+                input.type = input.type === 'password' ? 'text' : 'password';
+            }
+            </script>
 
         </div>
 
