@@ -9,9 +9,15 @@
     <a href="{{ url_for('cadastro') }}" class="btn-acao">Novo Produto</a>
 </div>
 
+<div class="filtros-produto">
+    <button class="btn-filtro ativo" onclick="filtrar('todos')">Todos</button>
+    <button class="btn-filtro" onclick="filtrar('baixo')">Estoque Baixo</button>
+    <button class="btn-filtro" onclick="filtrar('normal')">Normal</button>
+</div>
+
 <div class="tabela-container">
     {% if produtos %}
-    <table class="tabela">
+    <table class="tabela" id="tabela-produtos">
         <thead>
             <tr>
                 <th>Nome</th>
@@ -24,15 +30,20 @@
         </thead>
         <tbody>
             {% for produto in produtos %}
-            <tr {% if produto['estoque_baixo'] %}class="linha-alerta"{% endif %}>
+            <tr {% if produto['estoque_baixo'] %}class="linha-alerta" data-status="baixo"{% else %}data-status="normal"{% endif %}>
                 <td>{{ produto['nome'] }}</td>
-                <td>{{ produto['quantidade'] }}</td>
+                <td><strong {% if produto['estoque_baixo'] %}style="color:var(--vermelho)"{% endif %}>{{ produto['quantidade'] }}</strong></td>
                 <td>R$ {{ "%.2f"|format(produto['preco']) }}</td>
                 <td>{{ produto['estoque_minimo'] }}</td>
-                <td>{% if produto['estoque_baixo'] %}Estoque Baixo{% else %}Normal{% endif %}</td>
+                <td>
+                    {% if produto['estoque_baixo'] %}
+                    <span class="badge-alerta">ESTOQUE BAIXO</span>
+                    {% else %}
+                    <span class="badge-normal">Normal</span>
+                    {% endif %}
+                </td>
                 <td>
                     <a href="{{ url_for('editar', produto_id=produto['id']) }}" class="btn-editar">Editar</a>
-
                     <form method="POST" action="{{ url_for('excluir', produto_id=produto['id']) }}"
                           style="display:inline;"
                           onsubmit="return confirm('Tem certeza que deseja excluir {{ produto['nome'] }}?')">
@@ -47,5 +58,23 @@
     <p class="sem-dados">Nenhum produto cadastrado ainda.</p>
     {% endif %}
 </div>
+
+<script>
+function filtrar(tipo) {
+    const linhas = document.querySelectorAll('#tabela-produtos tbody tr');
+    const botoes = document.querySelectorAll('.btn-filtro');
+
+    botoes.forEach(b => b.classList.remove('ativo'));
+    event.target.classList.add('ativo');
+
+    linhas.forEach(linha => {
+        if (tipo === 'todos') {
+            linha.style.display = '';
+        } else {
+            linha.style.display = linha.dataset.status === tipo ? '' : 'none';
+        }
+    });
+}
+</script>
 
 {% endblock %}
