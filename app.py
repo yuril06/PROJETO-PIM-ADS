@@ -39,7 +39,7 @@ def login():
         senha   = request.form['senha']
 
         # le as credenciais das variaveis de ambiente
-        usuario_correto = os.getenv('ADMIN_USER', 'escolamadeuoliverio@cantina.com')
+        usuario_correto = os.getenv('ADMIN_USER', 'escolaamadeuoliverio@cantina.com')
         senha_correta   = os.getenv('ADMIN_PASSWORD', 'AmadeuCantina@2026')
 
         # verifica se usuario e senha estao corretos
