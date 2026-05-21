@@ -2,13 +2,14 @@
 import resend
 import os
 from dotenv import load_dotenv
+from modules.configuracoes import get_email_destinatario
 
 load_dotenv()
 
 
 def enviar_email_alerta(produto_nome, quantidade_atual, quantidade_minima):
-    api_key     = os.getenv('RESEND_API_KEY')
-    destinatario = os.getenv('EMAIL_DESTINATARIO')
+    api_key      = os.getenv('RESEND_API_KEY')
+    destinatario = get_email_destinatario()
 
     if not api_key or not destinatario:
         print("RESEND_API_KEY ou EMAIL_DESTINATARIO nao configurados")

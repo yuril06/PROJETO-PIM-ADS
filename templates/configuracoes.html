@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block titulo %}Configuracoes - Cantina Escolar{% endblock %}
+
+{% block conteudo %}
+
+<div class="cabecalho-pagina">
+    <h1>Configuracoes</h1>
+    <a href="{{ url_for('painel') }}" class="btn-voltar">Voltar</a>
+</div>
+
+<div class="formulario-container">
+    <h2 style="margin-bottom: 20px; font-size: 1rem; color: var(--azul);">Notificacao de Estoque Baixo</h2>
+
+    <form method="POST" action="{{ url_for('configuracoes') }}">
+        <div class="campo-formulario">
+            <label for="email_destinatario">E-mail para receber alertas</label>
+            <input type="email" id="email_destinatario" name="email_destinatario"
+                   value="{{ email_atual }}" required>
+            <small>Quando um produto atingir o estoque minimo, um alerta sera enviado para este e-mail.</small>
+        </div>
+
+        <button type="submit" class="btn-principal">Salvar</button>
+    </form>
+</div>
+
+{% endblock %}
