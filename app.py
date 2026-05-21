@@ -8,20 +8,12 @@ from functools import wraps
 import os
 
 from modules.estoque import cadastrar_produto, listar_produtos, buscar_produto, registrar_venda, editar_produto, excluir_produto, excluir_venda
-from modules.notificacao import verificar_e_notificar
 from modules.relatorio import relatorio_diario, historico_por_dia_semana, historico_por_produto, vendas_por_data
-from modules.configuracoes import criar_tabela_configuracoes, get_email_destinatario, set_config
 import datetime
 
 load_dotenv()
 
 app = Flask(__name__)
-
-with app.app_context():
-    try:
-        criar_tabela_configuracoes()
-    except Exception:
-        pass
 app.secret_key = os.getenv('SECRET_KEY', 'cantina_escola_2024')
 
 
@@ -150,14 +142,9 @@ def venda():
             if resultado == 'sucesso':
                 flash('Venda registrada com sucesso!', 'sucesso')
 
-                # verifica se o produto atingiu o estoque minimo
                 produto = buscar_produto(produto_id)
                 if produto and produto['quantidade'] <= produto['estoque_minimo']:
-                    email_ok = verificar_e_notificar(produto)
-                    if email_ok:
-                        flash(f'Atencao: "{produto["nome"]}" atingiu o estoque minimo. E-mail enviado.', 'aviso')
-                    else:
-                        flash(f'Atencao: "{produto["nome"]}" atingiu o estoque minimo.', 'aviso')
+                    flash(f'Atencao: "{produto["nome"]}" atingiu o estoque minimo.', 'aviso')
 
             elif resultado == 'estoque_insuficiente':
                 flash('Estoque insuficiente para esta venda.', 'erro')
@@ -285,35 +272,6 @@ def historico():
         return render_template('historico.html', historico=dados_semana, por_produto=dados_produto, resultado_data=resultado_data, data_buscada=data.strftime('%Y-%m-%d'))
     except Exception as erro:
         return render_template('erro_db.html', erro=str(erro)), 500
-
-
-# pagina de configuracoes do sistema
-@app.route('/configuracoes', methods=['GET', 'POST'])
-@login_required
-def configuracoes():
-    if request.method == 'POST':
-        acao = request.form.get('acao')
-
-        if acao == 'salvar':
-            email = request.form.get('email_destinatario', '').strip()
-            if email:
-                set_config('email_destinatario', email)
-                flash('Configuracoes salvas com sucesso!', 'sucesso')
-            else:
-                flash('O e-mail nao pode estar vazio.', 'erro')
-
-        elif acao == 'testar':
-            from modules.notificacao import enviar_email_alerta
-            ok = enviar_email_alerta('Produto Teste', 2, 5)
-            if ok:
-                flash('E-mail de teste enviado com sucesso!', 'sucesso')
-            else:
-                flash('Erro ao enviar e-mail. Verifique a RESEND_API_KEY no Railway.', 'erro')
-
-        return redirect(url_for('configuracoes'))
-
-    email_atual = get_email_destinatario()
-    return render_template('configuracoes.html', email_atual=email_atual)
 
 
 # health check para o Railway
