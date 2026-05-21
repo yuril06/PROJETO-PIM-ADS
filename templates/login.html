@@ -35,7 +35,7 @@
                     <label for="senha">Senha</label>
                     <div class="campo-senha">
                         <input type="password" id="senha" name="senha" required>
-                        <button type="button" class="btn-olho" onclick="toggleSenha()">&#128065;</button>
+                        <button type="button" class="btn-olho" onclick="toggleSenha(this)">ver</button>
                     </div>
                 </div>
 
@@ -43,9 +43,15 @@
             </form>
 
             <script>
-            function toggleSenha() {
+            function toggleSenha(btn) {
                 var input = document.getElementById('senha');
-                input.type = input.type === 'password' ? 'text' : 'password';
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    btn.textContent = 'ocultar';
+                } else {
+                    input.type = 'password';
+                    btn.textContent = 'ver';
+                }
             }
             </script>
 
