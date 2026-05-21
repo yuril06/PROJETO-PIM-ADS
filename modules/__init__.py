@@ -1,1 +1,1 @@
-# Pacote de módulos do sistema de estoque - Cantina Escolar
+# Pacote de módulos do sistema de estoque - Cantina Amadeu Olivério

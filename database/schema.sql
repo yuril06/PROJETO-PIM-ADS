@@ -1,5 +1,5 @@
 -- ============================================================
--- Banco de Dados: Sistema de Estoque - Cantina Escolar
+-- Banco de Dados: Sistema de Estoque - Cantina Amadeu Olivério
 -- Projeto PIM - ADS 1º Semestre
 -- ============================================================
 
