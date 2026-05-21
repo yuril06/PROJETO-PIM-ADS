@@ -292,12 +292,24 @@ def historico():
 @login_required
 def configuracoes():
     if request.method == 'POST':
-        email = request.form.get('email_destinatario', '').strip()
-        if email:
-            set_config('email_destinatario', email)
-            flash('Configuracoes salvas com sucesso!', 'sucesso')
-        else:
-            flash('O e-mail nao pode estar vazio.', 'erro')
+        acao = request.form.get('acao')
+
+        if acao == 'salvar':
+            email = request.form.get('email_destinatario', '').strip()
+            if email:
+                set_config('email_destinatario', email)
+                flash('Configuracoes salvas com sucesso!', 'sucesso')
+            else:
+                flash('O e-mail nao pode estar vazio.', 'erro')
+
+        elif acao == 'testar':
+            from modules.notificacao import enviar_email_alerta
+            ok = enviar_email_alerta('Produto Teste', 2, 5)
+            if ok:
+                flash('E-mail de teste enviado com sucesso!', 'sucesso')
+            else:
+                flash('Erro ao enviar e-mail. Verifique a RESEND_API_KEY no Railway.', 'erro')
+
         return redirect(url_for('configuracoes'))
 
     email_atual = get_email_destinatario()

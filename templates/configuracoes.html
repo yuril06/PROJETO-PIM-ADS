@@ -20,7 +20,13 @@
             <small>Quando um produto atingir o estoque minimo, um alerta sera enviado para este e-mail.</small>
         </div>
 
+        <input type="hidden" name="acao" value="salvar">
         <button type="submit" class="btn-principal">Salvar</button>
+    </form>
+
+    <form method="POST" action="{{ url_for('configuracoes') }}" style="margin-top: 12px;">
+        <input type="hidden" name="acao" value="testar">
+        <button type="submit" class="btn-acao" style="width: 100%;">Enviar e-mail de teste</button>
     </form>
 </div>
 
