@@ -343,6 +343,18 @@ body {
     font-weight: bold;
 }
 
+/* --- Login --- */
+.login-container {
+    margin-top: 60px;
+}
+
+@media (max-width: 768px) {
+    .login-container {
+        margin-top: 20px;
+        max-width: 100%;
+    }
+}
+
 /* --- Campo senha com olho --- */
 .campo-senha {
     display: flex;
