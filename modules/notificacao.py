@@ -38,7 +38,7 @@ def enviar_email_alerta(produto_nome, quantidade_atual, quantidade_minima):
     try:
         resend.Emails.send({
             "from": "onboarding@resend.dev",
-            "to": destinatario,
+            "to": [destinatario],
             "subject": f"Estoque Baixo - {produto_nome}",
             "html": corpo
         })
