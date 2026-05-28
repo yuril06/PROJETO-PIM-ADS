@@ -2,9 +2,8 @@
 # projeto PIM - ADS 1 semestre
 # tecnologias: Python, Flask, MySQL
 
-from flask import Flask, render_template, request, redirect, url_for, flash, session
+from flask import Flask, render_template, request, redirect, url_for, flash
 from dotenv import load_dotenv
-from functools import wraps
 import os
 
 from modules.estoque import cadastrar_produto, listar_produtos, buscar_produto, registrar_venda, editar_produto, excluir_produto, excluir_venda
@@ -17,56 +16,12 @@ app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'cantina_escola_2024')
 
 
-# decorator que protege rotas — redireciona para login se nao estiver logado
-def login_required(f):
-    @wraps(f)
-    def verificar(*args, **kwargs):
-        if not session.get('logado'):
-            return redirect(url_for('login'))
-        return f(*args, **kwargs)
-    return verificar
-
-
-# pagina de login
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    # se ja estiver logado, manda pro painel
-    if session.get('logado'):
-        return redirect(url_for('painel'))
-
-    if request.method == 'POST':
-        usuario = request.form['usuario']
-        senha   = request.form['senha']
-
-        # le as credenciais das variaveis de ambiente
-        usuario_correto = os.getenv('ADMIN_USER', 'escolaamadeuoliverio@cantina.com')
-        senha_correta   = os.getenv('ADMIN_PASSWORD', 'AmadeuCantina@2026')
-
-        # verifica se usuario e senha estao corretos
-        if usuario == usuario_correto and senha == senha_correta:
-            session['logado'] = True
-            return redirect(url_for('painel'))
-        else:
-            flash('Usuario ou senha incorretos.', 'erro')
-
-    return render_template('login.html')
-
-
-# logout
-@app.route('/logout')
-def logout():
-    session.clear()
-    return redirect(url_for('login'))
-
-
 # pagina principal - mostra todos os produtos
 @app.route('/')
-@login_required
 def painel():
     try:
         produtos = listar_produtos()
 
-        # conta quantos produtos estao com estoque baixo (for + if)
         total_alertas = 0
         for produto in produtos:
             if produto['estoque_baixo']:
@@ -80,7 +35,6 @@ def painel():
 
 # pagina de cadastro de produto
 @app.route('/cadastro', methods=['GET', 'POST'])
-@login_required
 def cadastro():
     if request.method == 'POST':
         nome           = request.form['nome'].strip()
@@ -88,7 +42,6 @@ def cadastro():
         preco          = float(request.form['preco'])
         estoque_minimo = int(request.form['estoque_minimo'])
 
-        # valida os campos antes de salvar
         if not nome:
             flash('O nome do produto nao pode estar vazio.', 'erro')
             return render_template('cadastro.html')
@@ -120,7 +73,6 @@ def cadastro():
 
 # pagina de registro de venda
 @app.route('/venda', methods=['GET', 'POST'])
-@login_required
 def venda():
     try:
         produtos = listar_produtos()
@@ -138,7 +90,6 @@ def venda():
         try:
             resultado = registrar_venda(produto_id, quantidade)
 
-            # verifica o resultado da venda (if/elif)
             if resultado == 'sucesso':
                 flash('Venda registrada com sucesso!', 'sucesso')
 
@@ -162,7 +113,6 @@ def venda():
 
 # pagina de gerenciamento de produtos
 @app.route('/produtos')
-@login_required
 def gerenciar_produtos():
     try:
         produtos = listar_produtos()
@@ -173,7 +123,6 @@ def gerenciar_produtos():
 
 # editar produto
 @app.route('/editar/<int:produto_id>', methods=['GET', 'POST'])
-@login_required
 def editar(produto_id):
     try:
         produto = buscar_produto(produto_id)
@@ -206,7 +155,6 @@ def editar(produto_id):
 
 # excluir produto
 @app.route('/excluir/<int:produto_id>', methods=['POST'])
-@login_required
 def excluir(produto_id):
     try:
         produto = buscar_produto(produto_id)
@@ -226,7 +174,6 @@ def excluir(produto_id):
 
 # pagina de relatorio diario com filtro de data
 @app.route('/relatorio')
-@login_required
 def relatorio():
     try:
         data_str = request.args.get('data')
@@ -242,7 +189,6 @@ def relatorio():
 
 # excluir uma venda e restaurar estoque
 @app.route('/excluir_venda/<int:venda_id>', methods=['POST'])
-@login_required
 def excluir_venda_route(venda_id):
     origem = request.form.get('origem', 'relatorio')
     data   = request.form.get('data', '')
@@ -258,7 +204,6 @@ def excluir_venda_route(venda_id):
 
 # pagina de historico por dia da semana com busca por data
 @app.route('/historico')
-@login_required
 def historico():
     try:
         dados_semana  = historico_por_dia_semana()
