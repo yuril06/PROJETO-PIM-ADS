@@ -1,12 +1,5 @@
 .env
 .claude/
-
-# Ambientes virtuais Python
-venv/
-env/
 __pycache__/
 *.pyc
-
-# Arquivos do sistema
-.DS_Store
-Thumbs.db
+venv/
