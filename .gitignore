@@ -1,5 +1,5 @@
-# Arquivo com credenciais — NUNCA enviar ao GitHub
 .env
+.claude/
 
 # Ambientes virtuais Python
 venv/
