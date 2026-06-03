@@ -25,7 +25,10 @@
       "PowerShell(git -C \"C:\\\\Users\\\\Yuri\\\\OneDrive\\\\Desktop\\\\projeto-pim-ads\" commit -m \"Remove text from historico\")",
       "Bash(git add *)",
       "Bash(git commit *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(del modules\\\\notificacao.py)",
+      "Bash(del modules\\\\configuracoes.py)",
+      "Bash(del templates\\\\configuracoes.html)"
     ]
   }
 }

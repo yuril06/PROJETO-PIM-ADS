@@ -1,14 +1,13 @@
-# sistema de controle de estoque da cantina escolar
+# sistema de controle de estoque - cantina amadeu olivério
 # projeto PIM - ADS 1 semestre
-# tecnologias: Python, Flask, MySQL
 
 from flask import Flask, render_template, request, redirect, url_for, flash
 from dotenv import load_dotenv
 import os
+import datetime
 
 from modules.estoque import cadastrar_produto, listar_produtos, buscar_produto, registrar_venda, editar_produto, excluir_produto, excluir_venda
 from modules.relatorio import relatorio_diario, historico_por_dia_semana, historico_por_produto, vendas_por_data
-import datetime
 
 load_dotenv()
 
@@ -16,7 +15,6 @@ app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'cantina_escola_2024')
 
 
-# pagina principal - mostra todos os produtos
 @app.route('/')
 def painel():
     try:
@@ -28,12 +26,10 @@ def painel():
                 total_alertas += 1
 
         return render_template('index.html', produtos=produtos, total_alertas=total_alertas)
-
     except Exception as erro:
         return render_template('erro_db.html', erro=str(erro)), 500
 
 
-# pagina de cadastro de produto
 @app.route('/cadastro', methods=['GET', 'POST'])
 def cadastro():
     if request.method == 'POST':
@@ -71,7 +67,6 @@ def cadastro():
     return render_template('cadastro.html')
 
 
-# pagina de registro de venda
 @app.route('/venda', methods=['GET', 'POST'])
 def venda():
     try:
@@ -92,7 +87,6 @@ def venda():
 
             if resultado == 'sucesso':
                 flash('Venda registrada com sucesso!', 'sucesso')
-
                 produto = buscar_produto(produto_id)
                 if produto and produto['quantidade'] <= produto['estoque_minimo']:
                     flash(f'Atencao: "{produto["nome"]}" atingiu o estoque minimo.', 'aviso')
@@ -111,7 +105,6 @@ def venda():
     return render_template('venda.html', produtos=produtos)
 
 
-# pagina de gerenciamento de produtos
 @app.route('/produtos')
 def gerenciar_produtos():
     try:
@@ -121,7 +114,6 @@ def gerenciar_produtos():
         return render_template('erro_db.html', erro=str(erro)), 500
 
 
-# editar produto
 @app.route('/editar/<int:produto_id>', methods=['GET', 'POST'])
 def editar(produto_id):
     try:
@@ -153,7 +145,6 @@ def editar(produto_id):
     return render_template('editar.html', produto=produto)
 
 
-# excluir produto
 @app.route('/excluir/<int:produto_id>', methods=['POST'])
 def excluir(produto_id):
     try:
@@ -172,22 +163,17 @@ def excluir(produto_id):
     return redirect(url_for('gerenciar_produtos'))
 
 
-# pagina de relatorio diario com filtro de data
 @app.route('/relatorio')
 def relatorio():
     try:
         data_str = request.args.get('data')
-        if data_str:
-            data = datetime.date.fromisoformat(data_str)
-        else:
-            data = datetime.date.today()
+        data = datetime.date.fromisoformat(data_str) if data_str else datetime.date.today()
         dados = relatorio_diario(data)
         return render_template('relatorio.html', dados=dados)
     except Exception as erro:
         return render_template('erro_db.html', erro=str(erro)), 500
 
 
-# excluir uma venda e restaurar estoque
 @app.route('/excluir_venda/<int:venda_id>', methods=['POST'])
 def excluir_venda_route(venda_id):
     origem = request.form.get('origem', 'relatorio')
@@ -202,24 +188,20 @@ def excluir_venda_route(venda_id):
     return redirect(url_for('relatorio', data=data))
 
 
-# pagina de historico por dia da semana com busca por data
 @app.route('/historico')
 def historico():
     try:
         dados_semana  = historico_por_dia_semana()
         dados_produto = historico_por_produto()
         data_str = request.args.get('data')
-        if data_str:
-            data = datetime.date.fromisoformat(data_str)
-        else:
-            data = datetime.date.today()
+        data = datetime.date.fromisoformat(data_str) if data_str else datetime.date.today()
         resultado_data = vendas_por_data(data)
-        return render_template('historico.html', historico=dados_semana, por_produto=dados_produto, resultado_data=resultado_data, data_buscada=data.strftime('%Y-%m-%d'))
+        return render_template('historico.html', historico=dados_semana, por_produto=dados_produto,
+                               resultado_data=resultado_data, data_buscada=data.strftime('%Y-%m-%d'))
     except Exception as erro:
         return render_template('erro_db.html', erro=str(erro)), 500
 
 
-# health check para o Railway
 @app.route('/health')
 def health():
     return {'status': 'ok'}, 200
